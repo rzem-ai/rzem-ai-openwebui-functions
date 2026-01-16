@@ -36,6 +36,14 @@ Action functions provide custom actions that can be triggered by the UI or other
 
 **Use cases**: File processing, external API calls, database operations, background tasks, user-initiated operations
 
+## Example Implementations
+
+This repository includes production-ready example implementations:
+
+### Pipe Functions
+- **[fal.ai Image Generator](functions/pipes/fal-ai-image-generation-pipe.py)**: A unified pipe for generating images using various fal.ai models (Flux.1, Flux.2, NanoBanana, Z-Image). Features include prompt tag syntax for parameter overrides (--repeat, --ar, --steps, --seed, etc.), support for multiple models, and dynamic image generation.
+  - See [functions/pipes/README.md](functions/pipes/README.md) for detailed documentation
+
 ## Quick Start
 
 1. **Choose a function type** based on your use case

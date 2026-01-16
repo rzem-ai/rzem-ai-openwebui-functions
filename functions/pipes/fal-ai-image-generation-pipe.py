@@ -17,7 +17,7 @@ Supported Tags:
   --steps <int>     Number of inference steps (e.g., 24, 50)
   --seed <int>      Random seed for reproducibility (e.g., 42, 12345)
   --guide <float>   Guidance scale (e.g., 7.5, 3.5)
-  --count <int>     Number of images to generate (e.g., 1, 2, 4)
+  --repeat <int>    Number of images to generate (e.g., 1, 2, 4)
   --safe [bool]     Enable safety checker (--safe or --safe true/false)
   --format <str>    Output format (e.g., jpeg, png)
   --speed <str>     Acceleration mode (e.g., fast, quality)
@@ -26,7 +26,7 @@ Supported Tags:
 Examples:
   "a dog in a park --steps 24 --ar 16:9"
   "portrait photo —seed 42 —guide 7.5 —safe"
-  "landscape --ar 9:16 --count 2 --format png"
+  "landscape --ar 9:16 --repeat 2 --format png"
 
 Notes:
 - Tags are removed from the prompt before generation
@@ -54,7 +54,7 @@ MODELS = [
             {"tag": "steps", "parameter": "num_inference_steps"},
             {"tag": "seed", "parameter": "seed"},
             {"tag": "guide", "parameter": "guidance_scale"},
-            {"tag": "count", "parameter": "num_images"},
+            {"tag": "repeat", "parameter": "num_images"},
             {"tag": "safe", "parameter": "enable_safety_checker"},
             {"tag": "format", "parameter": "output_format"},
             {"tag": "speed", "parameter": "acceleration"},
@@ -71,7 +71,7 @@ MODELS = [
             {"tag": "steps", "parameter": "num_inference_steps"},
             {"tag": "seed", "parameter": "seed"},
             {"tag": "guide", "parameter": "guidance_scale"},
-            {"tag": "count", "parameter": "num_images"},
+            {"tag": "repeat", "parameter": "num_images"},
             {"tag": "safe", "parameter": "enable_safety_checker"},
             {"tag": "format", "parameter": "output_format"},
             {"tag": "speed", "parameter": "acceleration"},
@@ -89,7 +89,7 @@ MODELS = [
             {"tag": "steps", "parameter": "num_inference_steps"},
             {"tag": "seed", "parameter": "seed"},
             {"tag": "guide", "parameter": "guidance_scale"},
-            {"tag": "count", "parameter": "num_images"},
+            {"tag": "repeat", "parameter": "num_images"},
             {"tag": "safe", "parameter": "enable_safety_checker"},
             {"tag": "format", "parameter": "output_format"},
             {"tag": "speed", "parameter": "acceleration"},
@@ -106,7 +106,7 @@ MODELS = [
             {"tag": "steps", "parameter": "num_inference_steps"},
             {"tag": "seed", "parameter": "seed"},
             {"tag": "guide", "parameter": "guidance_scale"},
-            {"tag": "count", "parameter": "num_images"},
+            {"tag": "repeat", "parameter": "num_images"},
             {"tag": "safe", "parameter": "enable_safety_checker"},
             {"tag": "format", "parameter": "output_format"},
             {"tag": "speed", "parameter": "acceleration"},
@@ -123,7 +123,7 @@ MODELS = [
             {"tag": "steps", "parameter": "num_inference_steps"},
             {"tag": "seed", "parameter": "seed"},
             {"tag": "guide", "parameter": "guidance_scale"},
-            {"tag": "count", "parameter": "num_images"},
+            {"tag": "repeat", "parameter": "num_images"},
             {"tag": "safe", "parameter": "enable_safety_checker"},
             {"tag": "format", "parameter": "output_format"},
             {"tag": "speed", "parameter": "acceleration"},
@@ -140,7 +140,7 @@ MODELS = [
             {"tag": "steps", "parameter": "num_inference_steps"},
             {"tag": "seed", "parameter": "seed"},
             {"tag": "guide", "parameter": "guidance_scale"},
-            {"tag": "count", "parameter": "num_images"},
+            {"tag": "repeat", "parameter": "num_images"},
             {"tag": "safe", "parameter": "enable_safety_checker"},
             {"tag": "format", "parameter": "output_format"},
             {"tag": "speed", "parameter": "acceleration"},
@@ -157,7 +157,7 @@ MODELS = [
             {"tag": "steps", "parameter": "num_inference_steps"},
             {"tag": "seed", "parameter": "seed"},
             {"tag": "guide", "parameter": "guidance_scale"},
-            {"tag": "count", "parameter": "num_images"},
+            {"tag": "repeat", "parameter": "num_images"},
             {"tag": "safe", "parameter": "enable_safety_checker"},
             {"tag": "format", "parameter": "output_format"},
             {"tag": "speed", "parameter": "acceleration"},
@@ -174,7 +174,7 @@ MODELS = [
             {"tag": "steps", "parameter": "num_inference_steps"},
             {"tag": "seed", "parameter": "seed"},
             {"tag": "guide", "parameter": "guidance_scale"},
-            {"tag": "count", "parameter": "num_images"},
+            {"tag": "repeat", "parameter": "num_images"},
             {"tag": "safe", "parameter": "enable_safety_checker"},
             {"tag": "format", "parameter": "output_format"},
             {"tag": "speed", "parameter": "acceleration"},
@@ -191,7 +191,7 @@ MODELS = [
             {"tag": "steps", "parameter": "num_inference_steps"},
             {"tag": "seed", "parameter": "seed"},
             {"tag": "guide", "parameter": "guidance_scale"},
-            {"tag": "count", "parameter": "num_images"},
+            {"tag": "repeat", "parameter": "num_images"},
             {"tag": "safe", "parameter": "enable_safety_checker"},
             {"tag": "format", "parameter": "output_format"},
             {"tag": "speed", "parameter": "acceleration"},
@@ -208,7 +208,7 @@ MODELS = [
             {"tag": "steps", "parameter": "num_inference_steps"},
             {"tag": "seed", "parameter": "seed"},
             {"tag": "guide", "parameter": "guidance_scale"},
-            {"tag": "count", "parameter": "num_images"},
+            {"tag": "repeat", "parameter": "num_images"},
             {"tag": "safe", "parameter": "enable_safety_checker"},
             {"tag": "format", "parameter": "output_format"},
             {"tag": "speed", "parameter": "acceleration"},
