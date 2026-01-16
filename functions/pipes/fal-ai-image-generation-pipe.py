@@ -10,7 +10,7 @@ environment_variables: FAL_KEY
 PROMPT TAG SYNTAX:
 ==================
 You can override generation parameters by including tags in your prompt.
-Tags use the format: --tagname value
+Tags use the format: --tagname value (or —tagname value with em dash)
 
 Supported Tags:
   --ar <ratio>      Aspect ratio (e.g., 16:9, 9:16, 1:1, 4:3, 3:4)
@@ -25,7 +25,7 @@ Supported Tags:
 
 Examples:
   "a dog in a park --steps 24 --ar 16:9"
-  "portrait photo --seed 42 --guide 7.5 --safe"
+  "portrait photo —seed 42 —guide 7.5 —safe"
   "landscape --ar 9:16 --count 2 --format png"
 
 Notes:
@@ -247,10 +247,10 @@ def parse_prompt_tags(prompt: str, model_config: dict, valves) -> tuple:
     # Build a mapping of tag -> parameter name
     tag_map = {item["tag"]: item["parameter"] for item in parse_tags_config}
 
-    # Pattern to match tags: --tagname or --tagname value
-    # This regex captures: --(\w+)(?:\s+([^\s-][^\-]*?))?(?=\s+--|$)
-    # Matches "--steps 24", "--safe", "--ar 16:9", etc.
-    tag_pattern = r"--(\w+)(?:\s+([^\s-][^\-]*?))?(?=\s+--|$)"
+    # Pattern to match tags: --tagname or —tagname or --tagname value or —tagname value
+    # This regex captures: (?:--|—)(\w+)(?:\s+([^\s\-—][^\-—]*?))?(?=\s+(?:--|—)|$)
+    # Matches "--steps 24", "—steps 24", "--safe", "—safe", "--ar 16:9", "—ar 16:9", etc.
+    tag_pattern = r"(?:--|—)(\w+)(?:\s+([^\s\-—][^\-—]*?))?(?=\s+(?:--|—)|$)"
 
     matches = list(re.finditer(tag_pattern, prompt))
 
