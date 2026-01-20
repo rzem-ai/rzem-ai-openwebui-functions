@@ -540,6 +540,8 @@ class Pipe:
         # Logic Branches based on selected model
         if "imagen4" in api_model_id:
             arguments["aspect_ratio"] = self.valves.ASPECT_RATIO
+        elif "nano-banana" in api_model_id:
+            arguments["aspect_ratio"] = self.valves.ASPECT_RATIO
         else:
             # Fallback for known models that might not have a specific block above
             arguments["image_size"] = {
