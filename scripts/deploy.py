@@ -82,7 +82,18 @@ class OpenWebUIDeployer:
             description_match = re.search(r'description\s*=\s*["\']([^"\']+)["\']', content)
 
             # Generate ID from filename if not found
-            function_id = id_match.group(1) if id_match else file_path.stem.replace('_', '-')
+            # OpenWebUI only allows alphanumeric characters and underscores
+            if id_match:
+                function_id = id_match.group(1)
+            else:
+                # Convert filename to valid ID
+                function_id = file_path.stem
+
+            # Sanitize the ID: replace hyphens with underscores
+            # and remove any other non-alphanumeric characters except underscores
+            function_id = function_id.replace('-', '_')
+            function_id = re.sub(r'[^a-zA-Z0-9_]', '_', function_id)
+
             function_name = name_match.group(1) if name_match else class_name
             function_description = description_match.group(1) if description_match else f'Function from {file_path.name}'
 
