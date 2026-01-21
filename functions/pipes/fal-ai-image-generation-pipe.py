@@ -424,8 +424,9 @@ class Pipe:
 
     def __init__(self):
         self.type = "manifold"
-        self.id = "falai-master"
-        self.name = "Fal.ai Master: "
+        self.id = "openwebui_function_fal_ai"
+        self.name = "Fal.ai Image Generator"
+        self.description = "A unified pipe to generate images using various Fal.ai models. Requires explicit model selection."
         self.valves = self.Valves()
         self.emitter: Callable[[dict], Awaitable[None]] | None = None
 
