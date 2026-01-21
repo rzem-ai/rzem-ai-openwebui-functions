@@ -53,6 +53,17 @@ This repository includes production-ready example implementations:
 5. **Upload to OpenWebUI** via Settings > Functions
 6. **Test your function** in a chat or workflow
 
+## Automated Deployment (CI/CD)
+
+This repository includes automated deployment to OpenWebUI via GitHub Actions:
+
+- **Automatic deployment** on commits to the `main` branch
+- **One-time setup** with OpenWebUI URL and API key
+- **Seamless updates** of existing functions
+- **Deployment logs** for troubleshooting
+
+**Setup Guide**: See [docs/CICD_SETUP.md](docs/CICD_SETUP.md) for complete instructions on configuring automated deployment to your OpenWebUI instance.
+
 ## Template Structure
 
 Each template includes:
