@@ -2,9 +2,9 @@
 title: fal.ai Image Generator
 description: A unified pipe to generate images using various fal.ai models. Requires explicit model selection.
 author: Alex Rzem
-version: 3.0.0
+version: 0.2.0
 license: MIT
-requirements: fal-client, python-dotenv
+requirements: fal-client, python-dotenv, requests
 environment_variables: FAL_KEY
 
 PROMPT TAG SYNTAX:
@@ -38,6 +38,8 @@ Notes:
 import os
 import re
 import asyncio
+import json
+import requests
 from typing import List, Callable, Awaitable, AsyncGenerator
 from pydantic import BaseModel, Field
 import fal_client
@@ -422,6 +424,15 @@ class Pipe:
             default=False, description="Enable Safety Checker"
         )
 
+        # OpenRouter configuration for tag generation
+        OPENROUTER_API_KEY: str = Field(
+            default="", description="API Key for OpenRouter (required for tag generation)"
+        )
+        TAG_MODEL: str = Field(
+            default="qwen/qwen-3-vl-32b-instruct",
+            description="Model to use for tag generation via OpenRouter"
+        )
+
     def __init__(self):
         self.type = "manifold"
         self.id = "openwebui_function_fal_ai"
@@ -445,6 +456,101 @@ class Pipe:
             except Exception:
                 pass
 
+    def is_tag_generation_request(self, user_message: str) -> bool:
+        """
+        Detect if the request is for tag generation based on specific patterns.
+
+        Args:
+            user_message: The user message content to check
+
+        Returns:
+            bool: True if this is a tag generation request, False otherwise
+        """
+        if not user_message:
+            return False
+
+        message_lower = user_message.lower()
+
+        # Check for tag generation indicators
+        has_task_generate = "### task: generate" in message_lower
+        has_tags_keyword = "tags" in message_lower
+        has_tags_json = '"tags":' in user_message
+        has_categorizing = "categorizing the main themes" in message_lower
+
+        # Debug logging
+        print(f"[Tag Detection] Checking message for tag generation patterns...")
+        print(f"[Tag Detection] Has '### Task: Generate': {has_task_generate}")
+        print(f"[Tag Detection] Has 'tags' keyword: {has_tags_keyword}")
+        print(f"[Tag Detection] Has '\"tags\":' JSON: {has_tags_json}")
+        print(f"[Tag Detection] Has 'categorizing the main themes': {has_categorizing}")
+
+        # Return True if message contains tag generation indicators
+        is_tag_request = (has_task_generate and has_tags_keyword) or has_tags_json or has_categorizing
+        print(f"[Tag Detection] Is tag generation request: {is_tag_request}")
+
+        return is_tag_request
+
+    def generate_tags_with_openrouter(self, messages: List[dict]) -> str:
+        """
+        Generate tags using OpenRouter's Qwen model.
+
+        Args:
+            messages: List of message dictionaries to send to OpenRouter
+
+        Returns:
+            str: JSON string with generated tags
+        """
+        print("[OpenRouter] Starting tag generation...")
+
+        if not self.valves.OPENROUTER_API_KEY:
+            print("[OpenRouter] Error: OPENROUTER_API_KEY not set")
+            return '{"tags": ["Image Generation", "Art"]}'
+
+        try:
+            url = "https://openrouter.ai/api/v1/chat/completions"
+
+            headers = {
+                "Authorization": f"Bearer {self.valves.OPENROUTER_API_KEY}",
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://openwebui.com",
+                "X-Title": "OpenWebUI Tag Generation"
+            }
+
+            payload = {
+                "model": self.valves.TAG_MODEL,
+                "messages": messages,
+                "temperature": 0.3,
+                "max_tokens": 200
+            }
+
+            print(f"[OpenRouter] Calling API with model: {self.valves.TAG_MODEL}")
+            print(f"[OpenRouter] Payload: {json.dumps(payload, indent=2)}")
+
+            response = requests.post(url, headers=headers, json=payload, timeout=30)
+            response.raise_for_status()
+
+            result = response.json()
+            print(f"[OpenRouter] Response: {json.dumps(result, indent=2)}")
+
+            # Extract content from response
+            if "choices" in result and len(result["choices"]) > 0:
+                content = result["choices"][0].get("message", {}).get("content", "")
+                print(f"[OpenRouter] Generated content: {content}")
+                return content
+            else:
+                print("[OpenRouter] No choices in response, using fallback")
+                return '{"tags": ["Image Generation", "Art"]}'
+
+        except requests.exceptions.Timeout:
+            print("[OpenRouter] Request timeout, using fallback")
+            return '{"tags": ["Image Generation", "Art"]}'
+        except requests.exceptions.RequestException as e:
+            print(f"[OpenRouter] Request error: {e}, using fallback")
+            return '{"tags": ["Image Generation", "Art"]}'
+        except Exception as e:
+            print(f"[OpenRouter] Unexpected error: {e}, using fallback")
+            return '{"tags": ["Image Generation", "Art"]}'
+
     def pipes(self) -> List[dict]:
         return [{"id": model["id"], "name": model["name"]} for model in MODELS]
 
@@ -454,6 +560,35 @@ class Pipe:
         __event_emitter__: Callable[[dict], Awaitable[None]] = None,
     ) -> AsyncGenerator[str, None]:
         self.emitter = __event_emitter__
+
+        # 0. Check if this is a tag generation request
+        messages = body.get("messages", [])
+        if messages:
+            # Get the last user message
+            last_user_message = ""
+            for msg in reversed(messages):
+                if msg.get("role") == "user":
+                    content = msg.get("content")
+                    if isinstance(content, list):
+                        text_parts = [
+                            p.get("text", "") for p in content if p.get("type") == "text"
+                        ]
+                        last_user_message = " ".join(text_parts).strip()
+                    elif isinstance(content, str):
+                        last_user_message = content
+                    break
+
+            # Check if this is a tag generation request
+            if self.is_tag_generation_request(last_user_message):
+                print("[Pipe] Detected tag generation request, routing to OpenRouter...")
+                await self.emit_status("Generating tags with OpenRouter...", done=False)
+
+                # Generate tags using OpenRouter
+                tags_result = self.generate_tags_with_openrouter(messages)
+
+                await self.emit_status("Tag generation complete", done=True)
+                yield tags_result
+                return
 
         # 1. Determine Model ID
         request_model_id = body.get("model", "")
