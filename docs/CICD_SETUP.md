@@ -114,7 +114,7 @@ class YourFunctionName:
     Your function description
     """
 
-    id = "your-function-id"  # Required: Unique identifier
+    id = "your_function_id"  # Required: Unique identifier (alphanumeric + underscores only)
     name = "Display Name"    # Optional: Display name in UI
     description = "Brief description"  # Optional: Description
 
@@ -126,6 +126,9 @@ class YourFunctionName:
 The script automatically extracts:
 
 - **ID**: From the `id` attribute, or generates from filename if not found
+  - **Important**: IDs must contain only alphanumeric characters and underscores
+  - Hyphens and other special characters are automatically converted to underscores
+  - Example: `fal-ai-image-generator` becomes `fal_ai_image_generator`
 - **Name**: From the `name` attribute, or uses the class name if not found
 - **Description**: From the `description` attribute, or generates a default if not found
 
