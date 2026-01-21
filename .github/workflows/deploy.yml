@@ -1,0 +1,45 @@
+name: Deploy Functions to OpenWebUI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'functions/**/*.py'
+      - 'scripts/deploy.py'
+      - '.github/workflows/deploy.yml'
+
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Deploy functions to OpenWebUI
+        env:
+          OPENWEBUI_URL: ${{ secrets.OPENWEBUI_URL }}
+          OPENWEBUI_API_KEY: ${{ secrets.OPENWEBUI_API_KEY }}
+        run: |
+          python scripts/deploy.py
+
+      - name: Upload deployment logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-logs
+          path: deployment-log.txt
+          retention-days: 30
